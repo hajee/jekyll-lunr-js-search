@@ -5,25 +5,27 @@ module Jekyll
     class SearchEntry
       def self.create(page_or_post, renderer)
         case page_or_post
-        when Jekyll::Page, Jekyll::Document
-          if defined?(page_or_post.date)
-            date = page_or_post.date
-          else
-            date = nil
-          end
+        when Jekyll::Page
+          excerpt = ''          
+        when Jekyll::Document
+          excerpt = Jekyll::Excerpt.new(page_or_post).output
           categories = []
         else 
           if defined?(Jekyll::Post) and page_or_post.is_a?(Jekyll::Post)
-            date = page_or_post.date
             categories = page_or_post.categories
           else
             raise 'Not supported'
           end
         end
+        if defined?(page_or_post.date)
+          date = page_or_post.date
+        else
+          date = nil
+        end
         title, url = extract_title_and_url(page_or_post)
         body = renderer.render(page_or_post)
 
-        SearchEntry.new(title, url, date, categories, body, renderer)
+        SearchEntry.new(title, url, date, categories, body, renderer, excerpt)
       end
 
       def self.extract_title_and_url(item)
@@ -31,10 +33,10 @@ module Jekyll
         [ data['title'], data['url'] ]
       end
 
-      attr_reader :title, :url, :date, :categories, :body, :collection
+      attr_reader :title, :url, :date, :categories, :body, :collection, :excerpt
       
-      def initialize(title, url, date, categories, body, collection)
-        @title, @url, @date, @categories, @body, @collection = title, url, date, categories, body, collection
+      def initialize(title, url, date, categories, body, collection, excerpt)
+        @title, @url, @date, @categories, @body, @collection, @excerpt= title, url, date, categories, body, collection, excerpt
       end
       
       def strip_index_suffix_from_url!

@@ -71,6 +71,7 @@ module Jekyll
             "url" => entry.url,
             "date" => entry.date,
             "categories" => entry.categories,
+            "excerpt" => entry.excerpt,
             "body" => entry.body
           }
           @index.add(doc)
